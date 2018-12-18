@@ -11,6 +11,11 @@
   returns the file descriptor for the upstream pipe.
   =========================*/
 int server_handshake(int *to_client) {
+  if(mkfifo("hello_there", 0644) == -1){
+    printf("error : %d",errno);
+    exit(1);
+  }
+  open("hello_there", RDONLY);
   return 0;
 }
 
@@ -25,5 +30,6 @@ int server_handshake(int *to_client) {
   returns the file descriptor for the downstream pipe.
   =========================*/
 int client_handshake(int *to_server) {
+  
   return 0;
 }
