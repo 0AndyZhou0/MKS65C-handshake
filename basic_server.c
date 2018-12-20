@@ -12,20 +12,26 @@ int main() {
   char receive[100];
   while(1){
     //Receiving Information
-    from_client = server_handshake( &to_client );
+    if(read(from_client, receive, sizeof(receive)) <= 0){
+      from_client = server_handshake( &to_client );
+    }
     read(from_client, receive, sizeof(receive));
-    close(from_client);
-
+    printf("%s\n", receive);
+    
     //Modifies Information
-    for(int i = 0;receive[i];i++){
+    /*
+      for(int i = 0;receive[i];i++){
       char c = receive[i] + 26;
       if((c > 90 && c < 97) || (c > 123)){
-	c = c - 26;
+      c = c - 26;
       }
       send[i] = c;
-    }
+      }
+    */
+    strcpy(send, receive);
     
     //Sends Changed Information
     write(to_client, send, sizeof(send));
+      
   }
 }
