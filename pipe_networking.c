@@ -14,21 +14,19 @@ int server_handshake(int *to_client) {
   mkfifo("ur_mum_gay", 0644);//WKP
   
   char private_pipe[100];
-  int pipe1 = open("ur_mum_gay", O_RDONLY);//Waiting for private pipe
-  read(pipe1, private_pipe, sizeof(private_pipe));
-  close(pipe1);
+  int pipe = open("ur_mum_gay", O_RDONLY);//Waiting for private pipe
+  read(pipe, private_pipe, sizeof(char*));
   remove("ur_mum_gay");
+  printf("%s\n", private_pipe);
 
-  int pipe2 = open(private_pipe, O_WRONLY);//Sends file descriptor to client
-  write(pipe2, to_client, sizeof(to_client));
-  close(pipe2);
+  *to_client = open(private_pipe, O_WRONLY);//Sends to client file descriptor
+  write(*to_client, "sending signal", sizeof(char*));
 
-  int from_client[100];
-  int pipe3 = open(private_pipe, O_RDONLY);//Receives file descriptor from client
-  read(pipe3, from_client, sizeof(from_client));
-  close(pipe3);
+  char from_client[100];
+  read(pipe, from_client, sizeof(char*));//Receives from client file descriptor
+  printf("signal received : %s\n", from_client);
 
-  return *from_client;
+  return pipe;
 }
 
 
@@ -44,20 +42,17 @@ int server_handshake(int *to_client) {
 int client_handshake(int *to_server) {
   mkfifo("no_u", 0644);//Private Pipe
 
-  int pipe1 = open("ur_mum_gay", O_WRONLY);//Sends private pipe name
-  write(pipe1, "no_u", sizeof("no_u"));
-  close(pipe1);
+  *to_server = open("ur_mum_gay", O_WRONLY);//Sends private pipe name
+  write(*to_server, "no_u", sizeof(char*));
 
-  int from_server[100];
-  int pipe2 = open("no_u", O_RDONLY);//Recieves file descriptor to server
-  read(pipe2, from_server, sizeof(from_server));
-  close(pipe2);
+  char from_server[100];
+  int pipe = open("no_u", O_RDONLY);//Recieves from server file descriptor 
+  read(pipe, from_server, sizeof(char*));
+  printf("signal received : %s\n", from_server);
 
-  int pipe3 = open("no_u", O_WRONLY);//Sends file descriptor to server
-  write(pipe3, to_server, sizeof(to_server));
-  close(pipe3);
+  write(*to_server, "sending signal", sizeof(char*));
 
   remove("no_u");
 
-  return *from_server;
+  return pipe;
 }
